@@ -136,8 +136,8 @@ case $install in
         exit 0
     esac
     Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-    Fcuda=(${Fcuda// .// })
     if [ $? -eq 0 ]; then
+        Fcuda=(${Fcuda// .// })
         echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
     else
         echo -e "\n${WHITE_TXT}Downloading cuda run file${NO_COLOR}"
@@ -195,8 +195,8 @@ case $install in
         echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
         sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
         Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-        Fcuda=(${Fcuda// .// })
         if [ $? -eq 0 ]; then
+            Fcuda=(${Fcuda// .// })
             cd $HOME
             cd $(dirname "${Fcuda:2}")
             sudo sh cuda_10.0.130_410.48_linux.run --override
@@ -206,7 +206,7 @@ case $install in
                 grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
                 grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
                 grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
-                grep -qxF '# <<< cuda <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+                grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
                 
                 echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
                 echo -e "${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
@@ -214,7 +214,7 @@ case $install in
                 echo -e "${GREEN_TXT}make${NO_COLOR}"
                 echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
             else
-                echo -e "\n${RED_TXT}An error occurred, cuda installation failed.${NO_COLOR}"
+                echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
             fi
         else
             echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
@@ -331,8 +331,8 @@ case $install in
     3)
     echo -e "\n${WHITE_TXT}cudnn 7.6.0 installation${NO_COLOR}"
     Fcudnn=`sudo find | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
-    Fcudnn=(${Fcudnn// .// })
     if [ $? -eq 0 ]; then
+        Fcudnn=(${Fcudnn// .// })
         echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
     else
         echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
@@ -354,7 +354,7 @@ case $install in
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}cudnn 7.6.0 installation is done${NO_COLOR}"
     else
-        echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn. You could try to install cudnn manually::${NO_COLOR}"
+        echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn 7.6.0. You could try to install cudnn manually::${NO_COLOR}"
         echo -e "${WHITE_TXT}cd $HOME$(dirname "${Fcudnn:1}")${NO_COLOR}"
         echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
         echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
@@ -366,7 +366,7 @@ case $install in
         echo -e "${WHITE_TXT}sudo cp lib64/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
         echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
-        echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
+        echo -e "\n${WHITE_TXT}Check cudnn installation with:${NO_COLOR}"
         echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
     fi
     exit 0    
@@ -484,8 +484,8 @@ sudo apt install nvidia-driver-410
         fi    
     fi
 Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-Fcuda=(${Fcuda// .// })
 if [ $? -eq 0 ]; then
+    Fcuda=(${Fcuda// .// })
     echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
 else
     echo -e "\n${WHITE_TXT}Downloading cuda run file${NO_COLOR}"
@@ -543,8 +543,8 @@ case $ready in
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
     sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
     Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-    Fcuda=(${Fcuda// .// })
     if [ $? -eq 0 ]; then
+        Fcuda=(${Fcuda// .// })
         cd $HOME
         cd $(dirname "${Fcuda:2}")
         sudo sh cuda_10.0.130_410.48_linux.run --override
@@ -554,11 +554,11 @@ case $ready in
                 grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
                 grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
                 grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
-                grep -qxF '# <<< cuda <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+                grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
                 
                 echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
             else
-                echo -e "\n${RED_TXT}An error occurred, cuda installation failed.${NO_COLOR}"
+                echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
             fi
     else
         echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
@@ -634,8 +634,8 @@ case $ready in
 esac
 
 Fcudnn=`sudo find | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
-Fcudnn=(${Fcudnn// .// })
 if [ $? -eq 0 ]; then
+    Fcudnn=(${Fcudnn// .// })
     echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
 else
     echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
@@ -676,7 +676,7 @@ cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
 if [ $? -eq 0 ]; then
     echo -e "\n${GREEN_TXT}cudnn 7.6.0 installation is done${NO_COLOR}"
 else
-    echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn. You could try to install cudnn manually::${NO_COLOR}"
+    echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn 7.6.0. You could try to install cudnn manually::${NO_COLOR}"
     echo -e "${WHITE_TXT}cd $HOME$(dirname "${Fcudnn:1}")${NO_COLOR}"
     echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
     echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
@@ -691,8 +691,6 @@ else
     echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
     echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
 fi
-
-
 
 cd $HOME
 echo -e "\n${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"

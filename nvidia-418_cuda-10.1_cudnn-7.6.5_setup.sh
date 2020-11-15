@@ -136,8 +136,8 @@ case $install in
         exit 0
     esac
     Fcuda=`sudo find  | egrep cuda_10.1.243_418.87.00_linux.run`
-    Fcuda=(${Fcuda// .// })
     if [ $? -eq 0 ]; then
+        Fcuda=(${Fcuda// .// })
         echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
     else
         echo -e "\n${WHITE_TXT}Downloading cuda run file${NO_COLOR}"
@@ -195,17 +195,27 @@ case $install in
         echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
         sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
         Fcuda=`sudo find  | egrep cuda_10.1.243_418.87.00_linux.run`
-        Fcuda=(${Fcuda// .// })
         if [ $? -eq 0 ]; then
+            Fcuda=(${Fcuda// .// })
             cd $HOME
             cd $(dirname "${Fcuda:2}")
             sudo sh cuda_10.1.243_418.87.00_linux.run --override
-            cd $HOME
-            grep -qxF '# >>> set PATH for cuda 10.1 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.1 installation >>>' >> .bashrc
-            grep -qxF 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' >> .bashrc
-            grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
-            grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' >> .bashrc
-            grep -qxF '# <<< cuda <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+            if [ $? -eq 0 ]; then
+                cd $HOME
+                grep -qxF '# >>> set PATH for cuda 10.1 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.1 installation >>>' >> .bashrc
+                grep -qxF 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' >> .bashrc
+                grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
+                grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' >> .bashrc
+                grep -qxF '# <<< cuda 10.1 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+
+                echo -e "\n${GREEN_TXT}cuda 10.1 installation is done${NO_COLOR}"
+                echo -e "${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
+                echo -e "${GREEN_TXT}cd ~/NVIDIA_CUDA-10.1_Samples/5_Simulations/nbody${NO_COLOR}"
+                echo -e "${GREEN_TXT}make${NO_COLOR}"
+                echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
+            else
+                echo -e "\n${RED_TXT}An error occurred, cuda 10.1 installation failed.${NO_COLOR}"
+            fi
         else
             echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.1.243_418.87.00_linux.run.${NO_COLOR}"
             echo -e "\n${WHITE_TXT}You may want try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
@@ -278,11 +288,6 @@ case $install in
         fi
         exit 0
     esac
-    echo -e "\n${GREEN_TXT}cuda 10.1 installation is done${NO_COLOR}"
-    echo -e "${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
-    echo -e "${GREEN_TXT}cd ~/NVIDIA_CUDA-10.1_Samples/5_Simulations/nbody${NO_COLOR}"
-    echo -e "${GREEN_TXT}make${NO_COLOR}"
-    echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
 
     echo -e "\n${WHITE_TXT}Reboot is required would you like to reboot now or later? <y/n>${NO_COLOR}\c"
 
@@ -326,8 +331,8 @@ case $install in
     3)
     echo -e "\n${WHITE_TXT}cudnn 7.6.5 installation${NO_COLOR}"
     Fcudnn=`sudo find  | egrep cudnn-10.1-linux-x64-v7.6.5.32.tgz`
-    Fcudnn=(${Fcudnn// .// })
     if [ $? -eq 0 ]; then
+        Fcudnn=(${Fcudnn// .// })
         echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
     else
         echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
@@ -346,8 +351,24 @@ case $install in
     sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
     cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
-    
-    echo -e "\n${GREEN_TXT}cudnn 10.1 installation is done${NO_COLOR}"
+    if [ $? -eq 0 ]; then
+        echo -e "\n${GREEN_TXT}cudnn 7.6.5 installation is done${NO_COLOR}"
+    else
+        echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn 7.6.5. You could try to install cudnn manually::${NO_COLOR}"
+        echo -e "${WHITE_TXT}cd $HOME$(dirname "${Fcudnn:1}")${NO_COLOR}"
+        echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
+        echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo cp -P include/cudnn.h /usr/include${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*${NO_COLOR}"
+
+        echo -e "${WHITE_TXT}sudo cp include/cudnn.h /usr/local/cuda/include${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo cp lib64/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
+
+        echo -e "\n${WHITE_TXT}Check cudnn installation with:${NO_COLOR}"
+        echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
+    fi
     exit 0    
     ;;
     4)
@@ -463,8 +484,8 @@ sudo apt install nvidia-driver-418
         fi    
     fi
 Fcuda=`sudo find  | egrep cuda_10.1.243_418.87.00_linux.run`
-Fcuda=(${Fcuda// .// })
 if [ $? -eq 0 ]; then
+    Fcuda=(${Fcuda// .// })
     echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
 else
     echo -e "\n${WHITE_TXT}Downloading cuda run file${NO_COLOR}"
@@ -522,17 +543,23 @@ case $ready in
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
     sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
     Fcuda=`sudo find  | egrep cuda_10.1.243_418.87.00_linux.run`
-    Fcuda=(${Fcuda// .// })
     if [ $? -eq 0 ]; then
+        Fcuda=(${Fcuda// .// })
         cd $HOME
         cd $(dirname "${Fcuda:2}")
         sudo sh cuda_10.1.243_418.87.00_linux.run --override
-        cd $HOME
-        grep -qxF '# >>> set PATH for cuda 10.1 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.1 installation >>>' >> .bashrc
-        grep -qxF 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' >> .bashrc
-        grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
-        grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' >> .bashrc
-        grep -qxF '# <<< cuda <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+        if [ $? -eq 0 ]; then
+            cd $HOME
+            grep -qxF '# >>> set PATH for cuda 10.1 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.1 installation >>>' >> .bashrc
+            grep -qxF 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}' >> .bashrc
+            grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
+            grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.1_Samples/common/inc' >> .bashrc
+            grep -qxF '# <<< cuda 10.1 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+
+            echo -e "\n${GREEN_TXT}cuda 10.1 installation is done${NO_COLOR}"
+        else
+                echo -e "\n${RED_TXT}An error occurred, cuda 10.1 installation failed.${NO_COLOR}"
+            fi
     else
         echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.1.243_418.87.00_linux.run.${NO_COLOR}"
         echo -e "\n${WHITE_TXT}You may want try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
@@ -606,10 +633,9 @@ case $ready in
     exit 0
 esac
 
-echo -e "\n${GREEN_TXT}cuda 10.1 installation is done${NO_COLOR}"
 Fcudnn=`sudo find  | egrep cudnn-10.1-linux-x64-v7.6.5.32.tgz`
-Fcudnn=(${Fcudnn// .// })
 if [ $? -eq 0 ]; then
+    Fcudnn=(${Fcudnn// .// })
     echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
 else
     echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
@@ -647,8 +673,24 @@ sudo cp lib64/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
 cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+if [ $? -eq 0 ]; then
+    echo -e "\n${GREEN_TXT}cudnn 7.6.5 installation is done${NO_COLOR}"
+else
+    echo -e "\n${RED_TXT}An error occurred, couldn't install cudnn 7.6.5. You could try to install cudnn manually::${NO_COLOR}"
+    echo -e "${WHITE_TXT}cd $HOME$(dirname "${Fcudnn:1}")${NO_COLOR}"
+    echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
+    echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp -P include/cudnn.h /usr/include${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*${NO_COLOR}"
 
-echo -e "\n${GREEN_TXT}cudnn 7.6.5 installation is done${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp include/cudnn.h /usr/local/cuda/include${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp lib64/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
+
+    echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
+    echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
+fi
 
 cd $HOME
 echo -e "\n${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
