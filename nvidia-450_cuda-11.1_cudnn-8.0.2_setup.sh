@@ -343,11 +343,11 @@ case $install in
     tar -xzf $(basename "${Fcudnn}")
     cd cuda
     sudo cp -P include/cudnn.h /usr/include
-    sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
+    sudo cp -P lib/libcudnn* /usr/lib/x86_64-linux-gnu/
     sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*
 
     sudo cp include/cudnn.h /usr/local/cuda/include
-    sudo cp lib64/libcudnn* /usr/local/cuda/lib64
+    sudo cp lib/libcudnn* /usr/local/cuda/lib64
     sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
     cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
@@ -359,11 +359,11 @@ case $install in
         echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
         echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
         echo -e "${WHITE_TXT}sudo cp -P include/cudnn.h /usr/include${NO_COLOR}"
-        echo -e "${WHITE_TXT}sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo cp -P lib/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
         echo -e "${WHITE_TXT}sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*${NO_COLOR}"
 
         echo -e "${WHITE_TXT}sudo cp include/cudnn.h /usr/local/cuda/include${NO_COLOR}"
-        echo -e "${WHITE_TXT}sudo cp lib64/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
+        echo -e "${WHITE_TXT}sudo cp lib/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
         echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
         echo -e "\n${WHITE_TXT}Check cudnn installation with:${NO_COLOR}"
@@ -665,11 +665,11 @@ cd $HOME$(dirname "${Fcudnn:1}")
 tar -xzf $(basename "${Fcudnn}")
 cd cuda
 sudo cp -P include/cudnn.h /usr/include
-sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
+sudo cp -P lib/libcudnn* /usr/lib/x86_64-linux-gnu/
 sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*
 
 sudo cp include/cudnn.h /usr/local/cuda/include
-sudo cp lib64/libcudnn* /usr/local/cuda/lib64
+sudo cp lib/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
 cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
@@ -681,11 +681,11 @@ else
     echo -e "${WHITE_TXT}tar -xzf $(basename "${Fcudnn}")${NO_COLOR}"
     echo -e "${WHITE_TXT}cd cuda${NO_COLOR}"
     echo -e "${WHITE_TXT}sudo cp -P include/cudnn.h /usr/include${NO_COLOR}"
-    echo -e "${WHITE_TXT}sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp -P lib/libcudnn* /usr/lib/x86_64-linux-gnu/${NO_COLOR}"
     echo -e "${WHITE_TXT}sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*${NO_COLOR}"
 
     echo -e "${WHITE_TXT}sudo cp include/cudnn.h /usr/local/cuda/include${NO_COLOR}"
-    echo -e "${WHITE_TXT}sudo cp lib64/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
+    echo -e "${WHITE_TXT}sudo cp lib/libcudnn* /usr/local/cuda/lib64${NO_COLOR}"
     echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
     echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
