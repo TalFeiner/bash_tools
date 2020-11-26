@@ -5,7 +5,7 @@ WHITE_TXT='\e[1;37m'
 RED_TXT='\e[31m'
 NO_COLOR='\033[0m'
 
-echo -e "\n${WHITE_TXT}Hi, what would you like to install? (1) for Nvidia driver 410, (2) for cuda 10.0, (3) for cudnn 7.6.0 or (4) for all of them <1/2/3/4> ${NO_COLOR}\c"
+echo -e "\n${WHITE_TXT}Hi, what would you like to install? press (1) for Nvidia driver 410, press (2) for cuda 10.0, press (3) for cudnn 7.6.0, press (4) for all of them at once, what is your choice? <1/2/3/4> ${NO_COLOR}\c"
 
 read -n 2 install
 

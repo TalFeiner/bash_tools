@@ -5,7 +5,7 @@ WHITE_TXT='\e[1;37m'
 RED_TXT='\e[31m'
 NO_COLOR='\033[0m'
 
-echo -e "\n${WHITE_TXT}Hi, what would you like to install? (1) for Nvidia driver 418, (2) for cuda 10.1, (3) for cudnn 7.6.5 or (4) for all of them <1/2/3/4> ${NO_COLOR}\c"
+echo -e "\n${WHITE_TXT}Hi, what would you like to install? press (1) for Nvidia driver 418, press (2) for cuda 10.1, press (3) for cudnn 7.6.5, press (4) for all of them at once, what is your choice? <1/2/3/4> ${NO_COLOR}\c"
 
 read -n 2 install
 
@@ -218,7 +218,7 @@ case $install in
             fi
         else
             echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.1.243_418.87.00_linux.run.${NO_COLOR}"
-            echo -e "\n${WHITE_TXT}You may want try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
+            echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
             echo -e "${WHITE_TXT}$ sudo sh cuda_10.1.243_418.87.00_linux.run --override${NO_COLOR}"
             sudo service gdm start
             if [ $? -eq 0 ]; then
@@ -562,7 +562,7 @@ case $ready in
             fi
     else
         echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.1.243_418.87.00_linux.run.${NO_COLOR}"
-        echo -e "\n${WHITE_TXT}You may want try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
+        echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.1.243_418.87.00_linux.run, then go to the file location and run it with:${NO_COLOR}"
         echo -e "${WHITE_TXT}$ sudo sh cuda_10.1.243_418.87.00_linux.run --override${NO_COLOR}"
         sudo service gdm start
         if [ $? -eq 0 ]; then
