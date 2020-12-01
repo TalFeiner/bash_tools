@@ -15,7 +15,7 @@ dir_ws=`sudo find -name "$workspace"`
 if [ ! -z "$dir_ws" ]; then
     dir_ws=(${dir_ws// .// })
     dir_ws=${dir_ws:1}
-    echo -e "${WHITE_TXT}\nIs this: $dir_ws the correct path to the workspace? <y/n> ${NO_COLOR}\c"
+    echo -e "${WHITE_TXT}\nIs this: $HOME$dir_ws the correct path to the workspace? <y/n> ${NO_COLOR}\c"
     read -n 2 path
 
     case $path in
@@ -48,7 +48,10 @@ if [ ! -z "$dir_ws" ]; then
         ;;
         n)
         read -p "Please, insert the full path to the workspace including the workspace name: " path_dir_ws
-        echo -e "${WHITE_TXT}\nIs this: $HOME/$path_dir_ws the correct path to the workspace? <y/n> ${NO_COLOR}\c"
+        if [[ $path_dir_ws != /* ]]; then
+            path_dir_ws="/"$path_dir_ws
+        fi
+        echo -e "${WHITE_TXT}\nIs this: $path_dir_ws the correct path to the workspace? <y/n> ${NO_COLOR}\c"
         read -n 2 path2
 
         case $path2 in
@@ -60,7 +63,6 @@ if [ ! -z "$dir_ws" ]; then
             mkdir $HOME/tmp
             rm -rf $path_dir_ws/src/CMakeLists.txt
             cp -TR $path_dir_ws/src $HOME/tmp
-            cd $HOME
             rm -rf $path_dir_ws
             mkdir -p $path_dir_ws/src
             sudo apt-get -y install python3-empy  
@@ -68,7 +70,7 @@ if [ ! -z "$dir_ws" ]; then
             sudo apt-get -y install python3-rospkg-modules
             cd $path_dir_ws/
             catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
-            cp -TR $HOME/tmp $HOME/$path_dir_ws/src
+            cp -TR $HOME/tmp $path_dir_ws/src
             catkin_make
             if [ $? -eq 0 ]; then
                 echo -e "${GREEN_TXT}\nDone, $path_dir_ws is compatible for python3 alongside python2.${NO_COLOR}\n"
@@ -103,9 +105,9 @@ if [ ! -z "$dir_ws" ]; then
     esac
 
 else
-    echo -e "\n${RED_TXT}Error occurred, could not find path to $workspace.${NO_COLOR}"
+    echo -e "\n${RED_TXT}Error occurred, could not find path to. Please try again $workspace.${NO_COLOR}"
     cd $P
-    exit 0
+    ./python3_alongside_python2.sh
 fi
 cd $P
 exit 0
