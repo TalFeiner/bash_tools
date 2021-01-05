@@ -5,10 +5,19 @@ WHITE_TXT='\e[1;37m'
 RED_TXT='\e[31m'
 NO_COLOR='\033[0m'
 
+P=`pwd`
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && DIR=`pwd`
+cd $P
+ 
 echo -e "\n"
 read -p "Please, insert workspace name: " workspace
-
-P=`pwd`
 
 cd $HOME
 dir_ws=`sudo find -name "$workspace"`
@@ -35,11 +44,13 @@ if [ ! -z "$dir_ws" ]; then
         sudo apt-get -y install python3-rospkg-modules
         cd $HOME/$workspace/
         catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
-        cp -TR $HOME/tmp $HOME/$workspace/src
-        catkin_make
         if [ $? -eq 0 ]; then
+            cp -TR $HOME/tmp $HOME/$workspace/src
+            catkin_make
+            if [ $? -eq 0 ]; then
+                rm -rf $HOME/tmp
+            fi
             echo -e "${GREEN_TXT}\nDone, $workspace is compatible for python3 alongside python2.${NO_COLOR}\n"
-            rm -rf $HOME/tmp
         else
             echo -e "\n${RED_TXT}Error occurred. Sorry, something went wrong. Please, try again or look for different method.${NO_COLOR}"
             echo -e "${RED_TXT}Note: we backed up your $workspace/src for you at $HOME/tmp${NO_COLOR}"
@@ -89,8 +100,8 @@ if [ ! -z "$dir_ws" ]; then
             *)
 
             echo -e "${RED_TXT}\nSorry, invalid input. Please try again${NO_COLOR}"
-            cd $P
-            ./python3_alongside_python2.sh
+            cd $DIR
+            ./ros-workspace_py2-alongside-py3.sh
             
         esac
 
@@ -98,16 +109,16 @@ if [ ! -z "$dir_ws" ]; then
         *)
 
         echo -e "${RED_TXT}\nSorry, invalid input. Please try again${NO_COLOR}"
-        cd $P
-        ./python3_alongside_python2.sh
+        cd $DIR
+        ./ros-workspace_py2-alongside-py3.sh
         ;;
 
     esac
 
 else
     echo -e "\n${RED_TXT}Error occurred, could not find path to. Please try again $workspace.${NO_COLOR}"
-    cd $P
-    ./python3_alongside_python2.sh
+    cd $DIR
+    ./ros-workspace_py2-alongside-py3.sh
 fi
 cd $P
 exit 0
