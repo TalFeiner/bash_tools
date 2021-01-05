@@ -81,11 +81,13 @@ if [ ! -z "$dir_ws" ]; then
             sudo apt-get -y install python3-rospkg-modules
             cd $path_dir_ws/
             catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
-            cp -TR $HOME/tmp $path_dir_ws/src
-            catkin_make
             if [ $? -eq 0 ]; then
+                cp -TR $HOME/tmp $path_dir_ws/src
+                catkin_make
+                if [ $? -eq 0 ]; then
+                    rm -rf $HOME/tmp
+                fi
                 echo -e "${GREEN_TXT}\nDone, $path_dir_ws is compatible for python3 alongside python2.${NO_COLOR}\n"
-                rm -rf $HOME/tmp
             else
                 echo -e "\n${RED_TXT}Error occurred. Sorry, something went wrong. Please, try again or look for different method.${NO_COLOR}"
                 echo -e "${RED_TXT}Note: we backed up your $path_dir_ws/src for you at $HOME/tmp${NO_COLOR}"
