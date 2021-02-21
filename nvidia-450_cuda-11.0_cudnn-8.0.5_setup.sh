@@ -121,6 +121,7 @@ case $install in
 	;;
     2)
     echo -e "\n${WHITE_TXT}cuda 11.0 installation${NO_COLOR}"
+    cd $HOME
     F=`sudo find | egrep nvidia-450_cuda-11.0_cudnn-8.0.5_setup.sh`
     F=(${F// .// })
     if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
@@ -157,6 +158,7 @@ case $install in
         echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
         exit 0
     esac
+    cd $HOME
     Fcuda=`sudo find  | egrep cuda_11.0.3_450.51.06_linux.run`
     if [ $? -eq 0 ]; then
         Fcuda=(${Fcuda// .// })
@@ -223,6 +225,7 @@ case $install in
 
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
     sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+    cd $HOME
     Fcuda=`sudo find  | egrep cuda_11.0.3_450.51.06_linux.run`
     if [ $? -eq 0 ]; then
         Fcuda=(${Fcuda// .// })
@@ -321,6 +324,7 @@ case $install in
     ;;
     3)
     echo -e "\n${WHITE_TXT}cudnn 8.0.5 installation${NO_COLOR}"
+    cd $HOME
     Fcudnn=`sudo find  | egrep cudnn-11.0-linux-x64-v8.0.5.39.tgz`
     if [ $? -eq 0 ]; then
         Fcudnn=(${Fcudnn// .// })
@@ -487,6 +491,7 @@ sudo apt install nvidia-driver-450
             fi
         fi    
     fi
+cd $HOME
 Fcuda=`sudo find  | egrep cuda_11.0.3_450.51.06_linux.run`
 if [ $? -eq 0 ]; then
     Fcuda=(${Fcuda// .// })
@@ -553,6 +558,7 @@ done
 
 echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
 sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+cd $HOME
 Fcuda=`sudo find  | egrep cuda_11.0.3_450.51.06_linux.run`
 if [ $? -eq 0 ]; then
     Fcuda=(${Fcuda// .// })
@@ -600,7 +606,7 @@ else
         esac
     exit 0
 fi 
-
+cd $HOME
 Fcudnn=`sudo find  | egrep cudnn-11.0-linux-x64-v8.0.5.39.tgz`
 if [ $? -eq 0 ]; then
     Fcudnn=(${Fcudnn// .// })
