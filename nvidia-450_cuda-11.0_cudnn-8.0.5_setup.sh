@@ -15,7 +15,7 @@ if [  "$ubuntuV" -ne 18  ]; then
     fi
 fi
 
-echo -e "\n${WHITE_TXT}Hi, what would you like to install?\n press (1) for Nvidia driver 450,\n  press (2) for cuda 11.0,\n  press (3) for cudnn 8.0.5,\n  press (4) for all of them at once,\nwhat is your choice? <1/2/3/4> ${NO_COLOR}\c"
+echo -e "\n${WHITE_TXT}Hi, what would you like to install?\n  press (1) for Nvidia driver 450,\n  press (2) for cuda 11.0,\n  press (3) for cudnn 8.0.5,\n  press (4) for all of them at once,\nwhat is your choice? <1/2/3/4> ${NO_COLOR}\c"
 
 read -n 2 install
 
@@ -121,13 +121,13 @@ case $install in
 	;;
     2)
     echo -e "\n${WHITE_TXT}cuda 11.0 installation${NO_COLOR}"
-    echo -e "\n${WHITE_TXT}If you don't have cuda run file (cuda_11.0.3_450.51.06_linux.run) Ethernet connection is required${NO_COLOR}"
-    echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
     F=`sudo find | egrep nvidia-450_cuda-11.0_cudnn-8.0.5_setup.sh`
     F=(${F// .// })
-    if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]
+    if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
         chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
     fi
+    echo -e "\n${WHITE_TXT}If you don't have cuda run file (cuda_11.0.3_450.51.06_linux.run) Ethernet connection is required${NO_COLOR}"
+    echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
     echo -e "${WHITE_TXT}cd \$HOME$(dirname "${F:1}")\n./$(basename "${F}")${NO_COLOR}"
     echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
@@ -143,7 +143,15 @@ case $install in
         n)
         echo -e "\n${WHITE_TXT}Please, go to tty.${NO_COLOR}"
         echo -e "${RED_TXT}Or proceed on your own risk!${NO_COLOR}"
-        exit 0    
+        echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
+            else
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+            fi
+        done
         ;;
         *)
         echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
@@ -363,13 +371,14 @@ case $install in
 esac
 
 cd $HOME
-echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
-echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 F=`sudo find | egrep nvidia-450_cuda-11.0_cudnn-8.0.5_setup.sh`
 F=(${F// .// })
-if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]
+if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
     chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
 fi
+
+echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
+echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
 echo -e "${WHITE_TXT}cd \$HOME$(dirname "${F:1}")\n./$(basename "${F}")${NO_COLOR}"
 echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
@@ -385,7 +394,15 @@ case $tty in
     n)
     echo -e "\n${WHITE_TXT}Please, go to tty.${NO_COLOR}"
     echo -e "${RED_TXT}Or proceed on your own risk!${NO_COLOR}"
-    exit 0    
+    echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
+            else
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+            fi
+        done
     ;;
     *)
     echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
