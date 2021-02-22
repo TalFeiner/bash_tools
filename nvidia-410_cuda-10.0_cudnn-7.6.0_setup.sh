@@ -5,7 +5,17 @@ WHITE_TXT='\e[1;37m'
 RED_TXT='\e[31m'
 NO_COLOR='\033[0m'
 
-echo -e "\n${WHITE_TXT}Hi, what would you like to install? press (1) for Nvidia driver 410, press (2) for cuda 10.0, press (3) for cudnn 7.6.0, press (4) for all of them at once, what is your choice? <1/2/3/4> ${NO_COLOR}\c"
+ubuntuV=`lsb_release -rs`
+ubuntuV=${ubuntuV/.*}
+if [  "$ubuntuV" -ne 18  ]; then
+    if [  "$ubuntuV" -ne 20  ]; then
+        if [  "$ubuntuV" -ne 16  ]; then
+            echo -e "${RED_TXT}Sorry, your ubuntu version ($ubuntuV) is not supported. you can proceed but it's NOT recommended!${NO_COLOR}"
+        fi
+    fi
+fi
+
+echo -e "\n${WHITE_TXT}Hi, what would you like to install?\n  press (1) for Nvidia driver 410,\n  press (2) for cuda 10.0,\n  press (3) for cudnn 7.6.0,\n  press (4) for all of them at once,\nwhat is your choice? <1/2/3/4> ${NO_COLOR}\c"
 
 read -n 2 install
 
@@ -111,14 +121,18 @@ case $install in
 	;;
     2)
     echo -e "\n${WHITE_TXT}cuda 10.0 installation${NO_COLOR}"
-    echo -e "\n${WHITE_TXT}If you don't have cuda run file (cuda_10.0.130_410.48_linux.run) Ethernet connection is required${NO_COLOR}"
-    echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
+    cd $HOME
     F=`sudo find | egrep nvidia-410_cuda-10.0_cudnn-7.6.0_setup.sh`
     F=(${F// .// })
-    chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
+    if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
+        chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
+    fi
+    echo -e "\n${WHITE_TXT}If you don't have cuda run file (cuda_10.0.130_410.48_linux.run) Ethernet connection is required${NO_COLOR}"
+    echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
     echo -e "${WHITE_TXT}cd \$HOME$(dirname "${F:1}")\n./$(basename "${F}")${NO_COLOR}"
     echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
+    echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
     echo -e "${WHITE_TXT}Are you in the tty? <y/n> ${NO_COLOR}\c"
 
     read -n 2 tty
@@ -128,14 +142,24 @@ case $install in
         echo -e "${WHITE_TXT}Great let's start${NO_COLOR}"
         ;;
         n)
-        echo -e "\n${WHITE_TXT}Please, go to tty then you can proceed${NO_COLOR}"
-        exit 0    
+        echo -e "\n${WHITE_TXT}Please, go to tty.${NO_COLOR}"
+        echo -e "${RED_TXT}Or proceed but it's NOT recommended!${NO_COLOR}"
+        echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
+            else
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+            fi
+        done
         ;;
         *)
         echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
         exit 0
     esac
-    Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
+    cd $HOME
+    Fcuda=`sudo find  | egrep cuda_10.0.130_410.48_linux.run`
     if [ $? -eq 0 ]; then
         Fcuda=(${Fcuda// .// })
         echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
@@ -153,8 +177,43 @@ case $install in
 
     sudo update-initramfs -u
 
-    echo -e "${WHITE_TXT}Your screen might turn black or you might see weird stuff on your screen, that's fine. Just try to go back to the tty by pressing Ctrl+Alt+F3/F2/F1 and proceed to follow the instruction normally.${NO_COLOR}"
-    echo -e "${WHITE_TXT}Press any key to continue${NO_COLOR}"
+    case $tty in
+        y)
+        echo -e "${WHITE_TXT}Your screen might turn black or you might see weird stuff on your screen, that's fine. Just try to go back to the tty by pressing Ctrl+Alt+F3/F2/F1 and proceed to follow the instruction normally.${NO_COLOR}"
+        echo -e "${WHITE_TXT}Press any key to continue${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
+            else
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+            fi
+        done
+
+        sudo service gdm stop
+        if [ $? -eq 0 ]; then
+            echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
+        else
+            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
+            sudo service gdm3 stop
+            if [ $? -eq 0 ]; then
+                echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
+            else
+                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
+                sudo service lightdm stop
+                if [ $? -eq 0 ]; then
+                    echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+                else
+                    echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
+                    exit 0
+                fi
+            fi
+        fi
+        ;;
+    esac
+
+    echo -e "\n${RED_TXT}Follow the terminal instructions\n  PLEASE NOTE:\n  1) Make sure that you say y for the cuda installation, for cuda Samples and for the symbolic link\n  2) Do not install anything else${NO_COLOR}"
+    echo -e "${WHITE_TXT}\nPress any key to continue${NO_COLOR}"
     while [ true ] ; do
         read -t 10 -n 1
         if [ $? = 0 ] ; then
@@ -164,62 +223,37 @@ case $install in
         fi
     done
 
-    sudo service gdm stop
+    echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
+    sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+    cd $HOME
+    Fcuda=`sudo find  | egrep cuda_10.0.130_410.48_linux.run`
     if [ $? -eq 0 ]; then
-        echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-        sudo service gdm3 stop
+        Fcuda=(${Fcuda// .// })
+        cd $HOME
+        cd $(dirname "${Fcuda:2}")
+        sudo sh cuda_10.0.130_410.48_linux.run --override
         if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-            sudo service lightdm stop
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-            else
-                echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                exit 0
-            fi
-        fi
-    fi
-
-    echo -e "\n${RED_TXT}Follow the terminal instructions\nPLEASE NOTE:\n1) Make sure that you say y for the cuda installation, for cuda Samples and for the symbolic link\n2) Do not install anything else${NO_COLOR}"
-
-    echo -e "${WHITE_TXT}Are you ready? <y/n> ${NO_COLOR}\c"
-
-    read -n 2 ready
-
-    case $ready in
-        y)
-        echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-        sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
-        Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-        if [ $? -eq 0 ]; then
-            Fcuda=(${Fcuda// .// })
             cd $HOME
-            cd $(dirname "${Fcuda:2}")
-            sudo sh cuda_10.0.130_410.48_linux.run --override
-            if [ $? -eq 0 ]; then
-                cd $HOME
-                grep -qxF '# >>> set PATH for cuda 10.0 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.0 installation >>>' >> .bashrc
-                grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
-                grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
-                grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
-                grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
-                
-                echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
-                echo -e "${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
-                echo -e "${GREEN_TXT}cd ~/NVIDIA_CUDA-10.0_Samples/5_Simulations/nbody${NO_COLOR}"
-                echo -e "${GREEN_TXT}make${NO_COLOR}"
-                echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
-            else
-                echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
-            fi
+            grep -qxF '# >>> set PATH for cuda 10.0 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.0 installation >>>' >> .bashrc
+            grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
+            grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
+            grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
+            grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+
+            echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
+            echo -e "${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
+            echo -e "${GREEN_TXT}cd ~/NVIDIA_CUDA-10.0_Samples/5_Simulations/nbody${NO_COLOR}"
+            echo -e "${GREEN_TXT}make${NO_COLOR}"
+            echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
         else
-            echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
-            echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.0.130_410.48_linux.run, then go to the file location and run it with:${NO_COLOR}"
-            echo -e "${WHITE_TXT}$ sudo sh cuda_10.0.130_410.48_linux.run --override${NO_COLOR}"
+            echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
+        fi
+    else
+        echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
+        echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.0.130_410.48_linux.run, then go to the file location and run it with:${NO_COLOR}"
+        echo -e "${WHITE_TXT}$ sudo sh cuda_10.0.130_410.48_linux.run --override${NO_COLOR}"
+        case $tty in
+        y)
             sudo service gdm start
             if [ $? -eq 0 ]; then
                 echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
@@ -239,79 +273,14 @@ case $install in
                     fi
                 fi
             fi
-            exit 0
-        fi 
-        ;;
-        n)
-        echo -e "\n${WHITE_TXT}Bye${NO_COLOR}"
-        sudo service gdm start
-        if [ $? -eq 0 ]; then
-            echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-            sudo service gdm3 start
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-            else
-                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-                sudo service lightdm start
-                if [ $? -eq 0 ]; then
-                    echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-                else
-                    echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                    exit 0
-                fi
-            fi
-        fi
-        exit 0    
-        ;;
-        *)
-        echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-        sudo service gdm start
-        if [ $? -eq 0 ]; then
-            echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-            sudo service gdm3 start
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-            else
-                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-                sudo service lightdm start
-                if [ $? -eq 0 ]; then
-                    echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-                else
-                    echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                    exit 0
-                fi
-            fi
-        fi
+            ;;
+        esac
         exit 0
-    esac
-    
+    fi
+
     echo -e "\n${WHITE_TXT}Reboot is required would you like to reboot now or later? <y/n>${NO_COLOR}\c"
 
     read -n 2 reboot
-
-    sudo service gdm start
-    if [ $? -eq 0 ]; then
-        echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-        sudo service gdm3 start
-        if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-            sudo service lightdm start
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-            else
-                echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                exit 0
-            fi
-        fi
-    fi
 
     case $reboot in
         y)
@@ -326,11 +295,37 @@ case $install in
         echo -e "\n${RED_TXT}Please, reboot now${NO_COLOR}"
         exit 0
     esac
+
+    case $tty in
+        y)
+        sudo service gdm start
+        if [ $? -eq 0 ]; then
+            echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
+        else
+            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
+            sudo service gdm3 start
+            if [ $? -eq 0 ]; then
+                echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
+            else
+                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
+                sudo service lightdm start
+                if [ $? -eq 0 ]; then
+                    echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+                else
+                    echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
+                    exit 0
+                fi
+            fi
+        fi
+        ;;
+    esac
+
     exit 0    
     ;;
     3)
     echo -e "\n${WHITE_TXT}cudnn 7.6.0 installation${NO_COLOR}"
-    Fcudnn=`sudo find | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
+    cd $HOME
+    Fcudnn=`sudo find  | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
     if [ $? -eq 0 ]; then
         Fcudnn=(${Fcudnn// .// })
         echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
@@ -350,7 +345,7 @@ case $install in
     sudo cp lib64/libcudnn* /usr/local/cuda/lib64
     sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
-    cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+    cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}cudnn 7.6.0 installation is done${NO_COLOR}"
     else
@@ -367,7 +362,7 @@ case $install in
         echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
         echo -e "\n${WHITE_TXT}Check cudnn installation with:${NO_COLOR}"
-        echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
+        echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2${NO_COLOR}"
     fi
     exit 0    
     ;;
@@ -380,14 +375,18 @@ case $install in
 esac
 
 cd $HOME
-echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
-echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 F=`sudo find | egrep nvidia-410_cuda-10.0_cudnn-7.6.0_setup.sh`
 F=(${F// .// })
-chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
+if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
+    chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
+fi
+
+echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
+echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
 echo -e "${WHITE_TXT}cd \$HOME$(dirname "${F:1}")\n./$(basename "${F}")${NO_COLOR}"
 echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
+echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
 echo -e "${WHITE_TXT}Are you in the tty? <y/n> ${NO_COLOR}\c"
 
 read -n 2 tty
@@ -397,8 +396,17 @@ case $tty in
     echo -e "${WHITE_TXT}Great let's start${NO_COLOR}"
 	;;
     n)
-    echo -e "\n${WHITE_TXT}Please, go to tty then you can proceed${NO_COLOR}"
-    exit 0    
+    echo -e "\n${WHITE_TXT}Please, go to tty.${NO_COLOR}"
+    echo -e "${RED_TXT}Or proceed but it's NOT recommended!${NO_COLOR}"
+    echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
+            else
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+            fi
+        done
     ;;
     *)
     echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
@@ -483,7 +491,8 @@ sudo apt install nvidia-driver-410
             fi
         fi    
     fi
-Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
+cd $HOME
+Fcuda=`sudo find  | egrep cuda_10.0.130_410.48_linux.run`
 if [ $? -eq 0 ]; then
     Fcuda=(${Fcuda// .// })
     echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
@@ -501,104 +510,30 @@ echo -e "blacklist nouveau\noptions nouveau modeset=0" | sudo tee /etc/modprobe.
 
 sudo update-initramfs -u
 
-echo -e "${WHITE_TXT}Your screen might turn black or you might see weird stuff on your screen, that's fine. Just try to go back to the tty by pressing Ctrl+Alt+F3/F2/F1 and proceed to follow the instruction normally.${NO_COLOR}"
-echo -e "${WHITE_TXT}Press any key to continue${NO_COLOR}"
-    while [ true ] ; do
-        read -t 10 -n 1
-        if [ $? = 0 ] ; then
-            break ;
-        else
-            echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
-        fi
-    done
-
-sudo service gdm stop
-if [ $? -eq 0 ]; then
-    echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-else
-    echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-    sudo service gdm3 stop
-    if [ $? -eq 0 ]; then
-        echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-        sudo service lightdm stop
-        if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-        else
-            echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-            exit 0
-        fi
-    fi
-fi
-
-echo -e "\n${RED_TXT}Follow the terminal instructions\nPLEASE NOTE:\n1) Make sure that you say y for the cuda installation, for cuda Samples and for the symbolic link\n2) Do not install anything else${NO_COLOR}"
-
-echo -e "${WHITE_TXT}Are you ready? <y/n> ${NO_COLOR}\c"
-
-read -n 2 ready
-
-case $ready in
+case $tty in
     y)
-    echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-    sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
-    Fcuda=`sudo find | egrep cuda_10.0.130_410.48_linux.run`
-    if [ $? -eq 0 ]; then
-        Fcuda=(${Fcuda// .// })
-        cd $HOME
-        cd $(dirname "${Fcuda:2}")
-        sudo sh cuda_10.0.130_410.48_linux.run --override
-            if [ $? -eq 0 ]; then
-                cd $HOME
-                grep -qxF '# >>> set PATH for cuda 10.0 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.0 installation >>>' >> .bashrc
-                grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
-                grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
-                grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
-                grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
-                
-                echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
+    echo -e "${WHITE_TXT}Your screen might turn black or you might see weird stuff on your screen, that's fine. Just try to go back to the tty by pressing Ctrl+Alt+F3/F2/F1 and proceed to follow the instruction normally.${NO_COLOR}"
+    echo -e "${WHITE_TXT}Press any key to continue${NO_COLOR}"
+        while [ true ] ; do
+            read -t 10 -n 1
+            if [ $? = 0 ] ; then
+                break ;
             else
-                echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
+                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
             fi
-    else
-        echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
-        echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.0.130_410.48_linux.run, then go to the file location and run it with:${NO_COLOR}"
-        echo -e "${WHITE_TXT}$ sudo sh cuda_10.0.130_410.48_linux.run --override${NO_COLOR}"
-        sudo service gdm start
-        if [ $? -eq 0 ]; then
-            echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-            sudo service gdm3 start
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-            else
-                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-                sudo service lightdm start
-                if [ $? -eq 0 ]; then
-                    echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-                else
-                    echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                    exit 0
-                fi
-            fi
-        fi
-        exit 0
-    fi 
-	;;
-    n)
-    echo -e "\n${WHITE_TXT}Bye${NO_COLOR}"
-    sudo service gdm start
+        done
+
+    sudo service gdm stop
     if [ $? -eq 0 ]; then
         echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
     else
         echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-        sudo service gdm3 start
+        sudo service gdm3 stop
         if [ $? -eq 0 ]; then
             echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
         else
             echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-            sudo service lightdm start
+            sudo service lightdm stop
             if [ $? -eq 0 ]; then
                 echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
             else
@@ -607,58 +542,101 @@ case $ready in
             fi
         fi
     fi
-    exit 0    
     ;;
-    *)
-    echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-    sudo service gdm start
-    if [ $? -eq 0 ]; then
-        echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-        sudo service gdm3 start
-        if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-            sudo service lightdm start
-            if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-            else
-                echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                exit 0
-            fi
-        fi
-    fi
-    exit 0
 esac
 
-Fcudnn=`sudo find | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
+echo -e "\n${RED_TXT}Follow the terminal instructions\n  PLEASE NOTE:\n  1) Make sure that you say y for the cuda installation, for cuda Samples and for the symbolic link\n  2) Do not install anything else${NO_COLOR}"
+echo -e "${WHITE_TXT}\nPress any key to continue${NO_COLOR}"
+while [ true ] ; do
+    read -t 10 -n 1
+    if [ $? = 0 ] ; then
+        break ;
+    else
+        echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+    fi
+done
+
+echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
+sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+cd $HOME
+Fcuda=`sudo find  | egrep cuda_10.0.130_410.48_linux.run`
+if [ $? -eq 0 ]; then
+    Fcuda=(${Fcuda// .// })
+    cd $HOME
+    cd $(dirname "${Fcuda:2}")
+    sudo sh cuda_10.0.130_410.48_linux.run --override
+    if [ $? -eq 0 ]; then
+        cd $HOME
+        grep -qxF '# >>> set PATH for cuda 10.0 installation >>>' .bashrc || echo -e '\n# >>> set PATH for cuda 10.0 installation >>>' >> .bashrc
+        grep -qxF 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' .bashrc || echo -e 'export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}' >> .bashrc
+        grep -qxF 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' .bashrc || echo -e 'export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> .bashrc
+        grep -qxF 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' .bashrc || echo -e 'export CPATH=$CPATH:$HOME/NVIDIA_CUDA-10.0_Samples/common/inc' >> .bashrc
+        grep -qxF '# <<< cuda 10.0 <<<' .bashrc || echo -e '# <<< cuda <<<' >> .bashrc
+
+        echo -e "\n${GREEN_TXT}cuda 10.0 installation is done${NO_COLOR}"
+    else
+            echo -e "\n${RED_TXT}An error occurred, cuda 10.0 installation failed.${NO_COLOR}"
+        fi
+else
+    echo -e "\n${RED_TXT}An error occurred, Couldn't find the right path to cuda_10.0.130_410.48_linux.run.${NO_COLOR}"
+    echo -e "\n${WHITE_TXT}You could try to find the right path to cuda_10.0.130_410.48_linux.run, then go to the file location and run it with:${NO_COLOR}"
+    echo -e "${WHITE_TXT}$ sudo sh cuda_10.0.130_410.48_linux.run --override${NO_COLOR}"
+    case $tty in
+        y)
+            sudo service gdm start
+            if [ $? -eq 0 ]; then
+                echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
+            else
+                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
+                sudo service gdm3 start
+                if [ $? -eq 0 ]; then
+                    echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
+                else
+                    echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
+                    sudo service lightdm start
+                    if [ $? -eq 0 ]; then
+                        echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+                    else
+                        echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
+                        exit 0
+                    fi
+                fi
+            fi
+            ;;
+        esac
+    exit 0
+fi 
+cd $HOME
+Fcudnn=`sudo find  | egrep cudnn-10.0-linux-x64-v7.6.0.64.tgz`
 if [ $? -eq 0 ]; then
     Fcudnn=(${Fcudnn// .// })
     echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
 else
     echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
     echo -e "${WHITE_TXT}Please make sure you have the correct file (cudnn-10.0-linux-x64-v7.6.0.64.tgz) then try to install cudnn once more.${NO_COLOR}"
-    sudo service gdm start
-    if [ $? -eq 0 ]; then
-        echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-        sudo service gdm3 start
-        if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-        else
-            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-            sudo service lightdm start
+    case $tty in
+        y)
+            sudo service gdm start
             if [ $? -eq 0 ]; then
-                echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+                echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
             else
-                echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                exit 0
+                echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
+                sudo service gdm3 start
+                if [ $? -eq 0 ]; then
+                    echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
+                else
+                    echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
+                    sudo service lightdm start
+                    if [ $? -eq 0 ]; then
+                        echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+                    else
+                        echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
+                        exit 0
+                    fi
+                fi
             fi
-        fi
-    fi
+            ;;
+        esac
     exit 0
 fi
 cd $HOME$(dirname "${Fcudnn:1}")
@@ -672,7 +650,7 @@ sudo cp include/cudnn.h /usr/local/cuda/include
 sudo cp lib64/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
-cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2
 if [ $? -eq 0 ]; then
     echo -e "\n${GREEN_TXT}cudnn 7.6.0 installation is done${NO_COLOR}"
 else
@@ -689,7 +667,7 @@ else
     echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
     echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
-    echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
+    echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2${NO_COLOR}"
 fi
 
 cd $HOME
@@ -701,26 +679,6 @@ echo -e "${GREEN_TXT}./nbody${NO_COLOR}"
 echo -e "\n${WHITE_TXT}Reboot is required would you like to reboot now or later? <y/n>${NO_COLOR}\c"
 
 read -n 2 reboot
-
-sudo service gdm start
-if [ $? -eq 0 ]; then
-    echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
-else
-    echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
-    sudo service gdm3 start
-    if [ $? -eq 0 ]; then
-        echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
-    else
-        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
-        sudo service lightdm start
-        if [ $? -eq 0 ]; then
-            echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
-        else
-            echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-            exit 0
-        fi
-    fi
-fi
 
 case $reboot in
     y)
@@ -734,6 +692,30 @@ case $reboot in
     echo -e "${WHITE_TXT}Invalid input.${NO_COLOR}"
     echo -e "\n${RED_TXT}Please, reboot now${NO_COLOR}"
     exit 0
+esac
+
+case $tty in
+y)
+    sudo service gdm start
+    if [ $? -eq 0 ]; then
+        echo -e "\n${WHITE_TXT}gdm service have been found${NO_COLOR}"
+    else
+        echo -e "${WHITE_TXT}An error occurred, couldn't find gdm service looking for gdm3 service instead${NO_COLOR}"
+        sudo service gdm3 start
+        if [ $? -eq 0 ]; then
+            echo -e "${WHITE_TXT}gdm3 service have been found${NO_COLOR}"
+        else
+            echo -e "${WHITE_TXT}An error occurred, couldn't find gdm3 service looking for lightdm service instead${NO_COLOR}"
+            sudo service lightdm start
+            if [ $? -eq 0 ]; then
+                echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
+            else
+                echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
+                exit 0
+            fi
+        fi
+    fi
+    ;;
 esac
 
 echo -e "Good luck! And my the gods be with you it might help :)"
