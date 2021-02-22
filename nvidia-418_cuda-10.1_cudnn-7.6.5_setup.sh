@@ -345,7 +345,7 @@ case $install in
     sudo cp lib64/libcudnn* /usr/local/cuda/lib64
     sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
-    cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2
+    cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}cudnn 7.6.5 installation is done${NO_COLOR}"
     else
@@ -362,7 +362,7 @@ case $install in
         echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
         echo -e "\n${WHITE_TXT}Check cudnn installation with:${NO_COLOR}"
-        echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2${NO_COLOR}"
+        echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
     fi
     exit 0    
     ;;
@@ -650,7 +650,7 @@ sudo cp include/cudnn.h /usr/local/cuda/include
 sudo cp lib64/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/lib64/libcudnn*
 
-cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2
+cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
 if [ $? -eq 0 ]; then
     echo -e "\n${GREEN_TXT}cudnn 7.6.5 installation is done${NO_COLOR}"
 else
@@ -667,7 +667,7 @@ else
     echo -e "${WHITE_TXT}sudo chmod a+r /usr/local/cuda/lib64/libcudnn*${NO_COLOR}"
 
     echo -e "\n${WHITE_TXT}Check installation with:${NO_COLOR}"
-    echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN -A 2${NO_COLOR}"
+    echo -e "${WHITE_TXT}cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2${NO_COLOR}"
 fi
 
 cd $HOME
