@@ -80,29 +80,29 @@ nvidia_driver_installation(){
 
     sudo update-initramfs -u
 
-    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
+    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
     else
-        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
+        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
         if [ $? -eq 0 ]; then
             echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
         else
-            sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
+            sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
             if [ $? -eq 0 ]; then
                 echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
             else
                 sudo add-apt-repository ppa:graphics-drivers/ppa
                 sudo apt-get update
-                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
+                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                 if [ $? -eq 0 ]; then
                     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                 else
-                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
+                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                     if [ $? -eq 0 ]; then
                         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                     else
-                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
+                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
@@ -117,15 +117,15 @@ nvidia_driver_installation(){
                                 # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
                                 # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
                                 # sudo apt update
-                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
+                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                                 # if [ $? -eq 0 ]; then
                                 #     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 # else
-                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
+                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                                 #     if [ $? -eq 0 ]; then
                                 #         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 #     else
-                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
+                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
                                 #         if [ $? -eq 0 ]; then
                                 #             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 #         else
@@ -249,7 +249,7 @@ cuda_installation(){
     done
 
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing
+    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing --fix-broken --fix-policy
     cd $HOME
     Fcuda=`sudo find  | egrep ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
