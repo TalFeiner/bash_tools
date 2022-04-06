@@ -13,7 +13,6 @@ CUDNN_FILE=cudnn-11.5-linux-x64-v8.3.0.98.tgz
 CUDA_URI=https://developer.download.nvidia.com/compute/cuda/11.5.0/local_installers/cuda_11.5.0_495.29.05_linux.run
 
 
-
 reboot_func(){
     echo -e "\n${WHITE_TXT}Reboot is required would you like to reboot now? <y/n>${NO_COLOR}\c"
 
@@ -25,7 +24,7 @@ reboot_func(){
         ;;
         n)
         echo -e "\n${RED_TXT}Please, reboot now${NO_COLOR}"
-        exit 0    
+        exit 0
         ;;
         *)
         echo -e "${WHITE_TXT}Invalid input.${NO_COLOR}"
@@ -38,7 +37,7 @@ reboot_func(){
 nvidia_driver_installation(){
     echo -e "${WHITE_TXT}Nvidia driver ${NVIDIA_VERSOIN} installation${NO_COLOR}"
     cd $HOME
-    echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
+    echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}"
     echo -e "\n${RED_TXT}First step uninstall cuda, please uninstall all the option that going to appear!${NO_COLOR}"
     echo -e "${WHITE_TXT}Press any key to continue${NO_COLOR}"
     while [ true ] ; do
@@ -81,39 +80,66 @@ nvidia_driver_installation(){
 
     sudo update-initramfs -u
 
-    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN}
+    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
     else
-        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN}
+        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
         if [ $? -eq 0 ]; then
             echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
         else
-            sudo apt -y install nvidia-${NVIDIA_VERSOIN}
+            sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
             if [ $? -eq 0 ]; then
                 echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
             else
-                sudo add-apt-repository ppa:graphics-drivers/ppa 
+                sudo add-apt-repository ppa:graphics-drivers/ppa
                 sudo apt-get update
-                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN}
+                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
                 if [ $? -eq 0 ]; then
                     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                 else
-                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN}
+                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
                     if [ $? -eq 0 ]; then
                         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                     else
-                        sudo apt -y install nvidia-${NVIDIA_VERSOIN}
+                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
-                            echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different method.${NO_COLOR}"
-                            exit 0
+                            cat /etc/apt/sources.list.backup | grep http://archive.ubuntu
+                            if [ $? -eq 0 ]; then
+                                echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different method.${NO_COLOR}"
+                                exit 0
+                            else
+                                echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
+                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" and try to run this file once more.${NO_COLOR}"
+                                exit 0
+                                # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+                                # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
+                                # sudo apt update
+                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing
+                                # if [ $? -eq 0 ]; then
+                                #     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                # else
+                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing
+                                #     if [ $? -eq 0 ]; then
+                                #         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                #     else
+                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing
+                                #         if [ $? -eq 0 ]; then
+                                #             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                #         else
+                                #             echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" and try to run this file once more.${NO_COLOR}"
+                                #             exit 0
+                                #         fi
+                                #     fi
+                                # fi
+                            fi
                         fi
                     fi
                 fi
             fi
-        fi    
+        fi
     fi
 }
 
@@ -223,7 +249,7 @@ cuda_installation(){
     done
 
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing
     cd $HOME
     Fcuda=`sudo find  | egrep ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
@@ -370,18 +396,18 @@ case $install in
         fi
         ;;
     esac
-    exit 0    
+    exit 0
     ;;
     3)
     cudnn_installation
-    exit 0    
+    exit 0
     ;;
     4)
-    echo -e "\n${WHITE_TXT}Good luck with it!${NO_COLOR}"   
+    echo -e "\n${WHITE_TXT}Good luck with it!${NO_COLOR}"
     ;;
     *)
     echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-    exit 0    
+    exit 0
 esac
 
 cd $HOME
@@ -391,37 +417,21 @@ if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
     chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
 fi
 
-echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}" 
+echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}"
 echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
 echo -e "${WHITE_TXT}cd \$HOME$(dirname "${F:1}")\n./$(basename "${F}")${NO_COLOR}"
 echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
 echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
-echo -e "${WHITE_TXT}Are you in the tty? <y/n> ${NO_COLOR}\c"
-
-read -n 2 tty
-
-case $tty in
-    y)
-    echo -e "${WHITE_TXT}Great let's start${NO_COLOR}"
-	;;
-    n)
-    echo -e "\n${WHITE_TXT}Please, go to tty.${NO_COLOR}"
-    echo -e "${RED_TXT}Or proceed but it's NOT recommended!${NO_COLOR}"
-    echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
-        while [ true ] ; do
-            read -t 10 -n 1
-            if [ $? = 0 ] ; then
-                break ;
-            else
-                echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
-            fi
-        done
-    ;;
-    *)
-    echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-    exit 0
-esac
+echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
+while [ true ] ; do
+    read -t 10 -n 1
+    if [ $? = 0 ] ; then
+        break ;
+    else
+        echo -e "${WHITE_TXT}waiting for the keypress${NO_COLOR}"
+    fi
+done
 
 nvidia_driver_installation
 cuda_installation
