@@ -54,9 +54,9 @@ nvidia_driver_installation(){
     sudo rm -rf *cuda*
     cd $HOME
     sudo rm -rf *NVIDIA_CUDA-*_Samples*
-    sudo apt purge *cudnn*
-    sudo apt purge *cuda*
-    sudo apt purge *nvidia*
+    sudo apt -y purge *cudnn*
+    sudo apt -y purge *cuda*
+    sudo apt -y purge *nvidia*
     sudo add-apt-repository --remove ppa:graphics-drivers/ppa
     cd /etc/apt/sources.list.d
     sudo rm *graphic*
@@ -64,8 +64,8 @@ nvidia_driver_installation(){
     sudo rm *cuda*
     sudo rm *cudnn*
     cd $HOME
-    sudo apt autoremove
-    sudo apt autoclean
+    sudo apt -y autoremove
+    sudo apt -y autoclean
     cd /var/cache/apt/archives
     sudo rm -rf *nvidia*
     sudo rm -rf *cuda*
@@ -81,29 +81,29 @@ nvidia_driver_installation(){
 
     sudo update-initramfs -u
 
-    sudo apt install nvidia-driver-${NVIDIA_VERSOIN}
+    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN}
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
     else
-        sudo apt install nvidia-graphics-driver-${NVIDIA_VERSOIN}
+        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN}
         if [ $? -eq 0 ]; then
             echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
         else
-            sudo apt install nvidia-${NVIDIA_VERSOIN}
+            sudo apt -y install nvidia-${NVIDIA_VERSOIN}
             if [ $? -eq 0 ]; then
                 echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
             else
                 sudo add-apt-repository ppa:graphics-drivers/ppa 
                 sudo apt-get update
-                sudo apt install nvidia-driver-${NVIDIA_VERSOIN}
+                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN}
                 if [ $? -eq 0 ]; then
                     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                 else
-                    sudo apt install nvidia-graphics-driver-${NVIDIA_VERSOIN}
+                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN}
                     if [ $? -eq 0 ]; then
                         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                     else
-                        sudo apt install nvidia-${NVIDIA_VERSOIN}
+                        sudo apt -y install nvidia-${NVIDIA_VERSOIN}
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
@@ -169,9 +169,9 @@ cuda_installation(){
         cd $HOME
     fi
 
-    sudo apt purge nvidia-cuda*
-    sudo apt autoremove
-    sudo apt autoclean
+    sudo apt -y purge nvidia-cuda*
+    sudo apt -y autoremove
+    sudo apt -y autoclean
     echo -e "blacklist nouveau\noptions nouveau modeset=0" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
 
     sudo update-initramfs -u
@@ -223,7 +223,7 @@ cuda_installation(){
     done
 
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-    sudo apt-get install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
+    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
     cd $HOME
     Fcuda=`sudo find  | egrep ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
