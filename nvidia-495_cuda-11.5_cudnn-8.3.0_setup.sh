@@ -16,7 +16,7 @@ CUDA_URI=https://developer.download.nvidia.com/compute/cuda/11.5.0/local_install
 reboot_func(){
     echo -e "\n${WHITE_TXT}Reboot is required would you like to reboot now? <y/n>${NO_COLOR}\c"
 
-    read -n 2 reboot
+    read reboot
 
     case $reboot in
         y)
@@ -80,29 +80,29 @@ nvidia_driver_installation(){
 
     sudo update-initramfs -u
 
-    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+    sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
     else
-        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+        sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
         if [ $? -eq 0 ]; then
             echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
         else
-            sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+            sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken
             if [ $? -eq 0 ]; then
                 echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
             else
                 sudo add-apt-repository ppa:graphics-drivers/ppa
                 sudo apt-get update
-                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                 if [ $? -eq 0 ]; then
                     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                 else
-                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                     if [ $? -eq 0 ]; then
                         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                     else
-                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
@@ -113,19 +113,21 @@ nvidia_driver_installation(){
                             else
                                 echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
                                 echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" and try to run this file once more.${NO_COLOR}"
+                                echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
+                                echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
                                 exit 0
                                 # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
                                 # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
                                 # sudo apt update
-                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                                 # if [ $? -eq 0 ]; then
                                 #     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 # else
-                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                                 #     if [ $? -eq 0 ]; then
                                 #         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 #     else
-                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken --fix-policy
+                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken
                                 #         if [ $? -eq 0 ]; then
                                 #             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                                 #         else
@@ -160,7 +162,7 @@ cuda_installation(){
     echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
     echo -e "${WHITE_TXT}Are you in the tty? <y/n> ${NO_COLOR}\c"
 
-    read -n 2 tty
+    read tty
 
     case $tty in
         y)
@@ -249,7 +251,7 @@ cuda_installation(){
     done
 
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
-    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing --fix-broken --fix-policy
+    sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing --fix-broken
     cd $HOME
     Fcuda=`sudo find  | egrep ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
@@ -362,7 +364,7 @@ fi
 
 echo -e "\n${WHITE_TXT}Hi, what would you like to install?\n  press (1) for Nvidia driver ${NVIDIA_VERSOIN},\n  press (2) for cuda ${CUDA_VERSOIN},\n  press (3) for cudnn ${CUDNN_VERSOIN},\n  press (4) for all of them at once,\nwhat is your choice? <1/2/3/4> ${NO_COLOR}\c"
 
-read -n 2 install
+read install
 
 case $install in
     1)
