@@ -437,7 +437,7 @@ done
 
 nvidia_driver_installation
 cuda_installation
-cudnn_installations
+cudnn_installation
 
 cd $HOME
 echo -e "\n${GREEN_TXT}You can try to compile and run cuda samples to check if everything installed as expected. In new regular terminal run:${NO_COLOR}"
