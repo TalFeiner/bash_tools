@@ -108,15 +108,16 @@ nvidia_driver_installation(){
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
-                            cat /etc/apt/sources.list.backup | grep http://archive.ubuntu
-                            if [ $? -eq 0 ]; then
-                                echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different method.${NO_COLOR}"
-                                exit 0
-                            else
+                            # cat /etc/apt/sources.list.backup | grep http://archive.ubuntu
+                            # if [ $? -eq 0 ]; then
+                            #     echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different method.${NO_COLOR}"
+                            #     exit 0
+                            # else
                                 echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
-                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" and try to run this file once more.${NO_COLOR}"
+                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" or try different mirror server and try to run this file once more.${NO_COLOR}"
                                 echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
                                 echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
+                                echo -e "\n${RED_TXT}If you already tried it, most likely this file can't help you. Try different installation.${NO_COLOR}"
                                 exit 0
                                 # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
                                 # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
@@ -138,7 +139,7 @@ nvidia_driver_installation(){
                                 #         fi
                                 #     fi
                                 # fi
-                            fi
+                            # fi
                         fi
                     fi
                 fi
