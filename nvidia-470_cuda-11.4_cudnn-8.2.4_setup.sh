@@ -114,7 +114,7 @@ nvidia_driver_installation(){
                             #     exit 0
                             # else
                                 echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
-                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\", click reload. and try to run this file once more.${NO_COLOR}"
+                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\", click Close then click reload. and try to run this file once more.${NO_COLOR}"
                                 echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
                                 echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
                                 echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.${NO_COLOR}"
