@@ -117,7 +117,7 @@ nvidia_driver_installation(){
                                 echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\", click reload. and try to run this file once more.${NO_COLOR}"
                                 echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
                                 echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
-                                echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.s${NO_COLOR}"
+                                echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.${NO_COLOR}"
                                 exit 0
                                 # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
                                 # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
