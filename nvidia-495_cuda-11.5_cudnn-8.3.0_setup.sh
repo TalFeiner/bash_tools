@@ -12,6 +12,7 @@ CUDA_FILE=cuda_11.5.0_495.29.05_linux.run
 CUDNN_FILE=cudnn-11.5-linux-x64-v8.3.0.98.tgz
 CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.5.0/local_installers/cuda_11.5.0_495.29.05_linux.run
 CUDNN_URL=https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.3.0/11.5_20211101/cudnn-11.5-linux-x64-v8.3.0.98.tgz
+FILE_NAME=nvidia-495_cuda-11.5_cudnn-8.3.0_setup.sh
 
 
 reboot_func(){
@@ -150,7 +151,7 @@ nvidia_driver_installation(){
 cuda_installation(){
     echo -e "\n${WHITE_TXT}cuda ${CUDA_VERSOIN} installation${NO_COLOR}"
     cd $HOME
-    F=`sudo find | egrep nvidia-${NVIDIA_VERSOIN}_cuda-${CUDA_VERSOIN}_cudnn-${CUDNN_VERSOIN}_setup.sh`
+    F=`sudo find | egrep ${FILE_NAME}`
     F=(${F// .// })
     if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
         chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
@@ -416,7 +417,7 @@ case $install in
 esac
 
 cd $HOME
-F=`sudo find | egrep nvidia-${NVIDIA_VERSOIN}_cuda-${CUDA_VERSOIN}_cudnn-${CUDNN_VERSOIN}_setup.sh`
+F=`sudo find | egrep ${FILE_NAME}`
 F=(${F// .// })
 if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
     chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
