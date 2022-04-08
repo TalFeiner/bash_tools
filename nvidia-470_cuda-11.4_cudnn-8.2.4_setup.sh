@@ -12,7 +12,7 @@ CUDA_FILE=cuda_11.4.0_470.42.01_linux.run
 CUDNN_FILE=cudnn-11.4-linux-x64-v8.2.4.15.tgz
 CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.4.0/local_installers/cuda_11.4.0_470.42.01_linux.run
 CUDNN_URL=https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.2.4/11.4_20210831/cudnn-11.4-linux-x64-v8.2.4.15.tgz
-FILE_NAME=nvidia-470_cuda-11.4_cudnn-8.2.4_setup.sh
+FILE_NAME=${0:2}
 
 
 reboot_func(){
