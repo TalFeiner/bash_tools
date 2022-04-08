@@ -10,7 +10,8 @@ CUDA_VERSOIN=11.4
 CUDNN_VERSOIN=8.2.4
 CUDA_FILE=cuda_11.4.0_470.42.01_linux.run
 CUDNN_FILE=cudnn-11.4-linux-x64-v8.2.4.15.tgz
-CUDA_URI=https://developer.download.nvidia.com/compute/cuda/11.4.0/local_installers/cuda_11.4.0_470.42.01_linux.run
+CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.4.0/local_installers/cuda_11.4.0_470.42.01_linux.run
+CUDNN_URL=https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.2.4/11.4_20210831/cudnn-11.4-linux-x64-v8.2.4.15.tgz
 
 
 reboot_func(){
@@ -193,7 +194,7 @@ cuda_installation(){
     else
         echo -e "\n${WHITE_TXT}Downloading cuda run file${NO_COLOR}"
         cd $HOME/Downloads
-        wget ${CUDA_URI}
+        wget ${CUDA_URL}
         cd $HOME
     fi
 
@@ -315,8 +316,10 @@ cudnn_installation(){
         Fcudnn=(${Fcudnn// .// })
         echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
     else
-        echo -e "\n${RED_TXT}An error occurred, couldn't find path to cudnn files. couldn't install it.${NO_COLOR}"
+        echo -e "\n${RED_TXT}Couldn't find cudnn installation files.${NO_COLOR}"
         echo -e "${WHITE_TXT}Please make sure you have the correct file (${CUDNN_FILE}) then try to install cudnn once more.${NO_COLOR}"
+        echo -e "${WHITE_TXT}You may use the attached link below:${NO_COLOR}"
+        echo -e "${WHITE_TXT}${CUDNN_URL}${NO_COLOR}"
         exit 0
     fi
     cd $HOME$(dirname "${Fcudnn:1}")
