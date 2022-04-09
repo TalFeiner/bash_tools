@@ -12,7 +12,7 @@ CUDA_FILE=cuda_11.0.3_450.51.06_linux.run
 CUDNN_FILE=cudnn-11.0-linux-x64-v8.0.5.39.tgz
 CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run
 CUDNN_URL=https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.0.5/11.0_20201106/cudnn-11.0-linux-x64-v8.0.5.39.tgz
-FILE_NAME=${0:2}
+FILE_NAME=${0##*/}
 
 
 reboot_func(){
@@ -108,38 +108,48 @@ nvidia_driver_installation(){
                         if [ $? -eq 0 ]; then
                             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
                         else
-                            # cat /etc/apt/sources.list.backup | grep http://archive.ubuntu
-                            # if [ $? -eq 0 ]; then
-                            #     echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different method.${NO_COLOR}"
-                            #     exit 0
-                            # else
-                                echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
-                                echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\", click Close then click reload. and try to run this file once more.${NO_COLOR}"
-                                echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
-                                echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
-                                echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.${NO_COLOR}"
+                            cat /etc/apt/sources.list | egrep -m 1 "^deb http://archive.ubuntu.com/ubuntu"
+                            if [ $? -eq 0 ]; then
+                                echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different installation.${NO_COLOR}"
                                 exit 0
-                                # sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
-                                # sudo sed -i 's|http://il.archive.ubuntu|http://archive.ubuntu|g' /etc/apt/sources.list
-                                # sudo apt update
-                                # sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
-                                # if [ $? -eq 0 ]; then
-                                #     echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
-                                # else
-                                #     sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
-                                #     if [ $? -eq 0 ]; then
-                                #         echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
-                                #     else
-                                #         sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken
-                                #         if [ $? -eq 0 ]; then
-                                #             echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
-                                #         else
-                                #             echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" and try to run this file once more.${NO_COLOR}"
-                                #             exit 0
-                                #         fi
-                                #     fi
-                                # fi
-                            # fi
+                            else
+                                sudo cp /etc/apt/sources.list /etc/apt/sources.list.tmp
+                                del=`cat /etc/apt/sources.list | egrep -m 1 "^deb http://"`
+                                del=${del##*deb http://}
+                                del=${del%%/*}
+                                sudo sed -i 's|^deb http://'${del}'|deb http://archive.ubuntu.com|g' /etc/apt/sources.list
+                                sudo apt update
+                                sudo apt -y install nvidia-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
+                                if [ $? -eq 0 ]; then
+                                    sudo cp /etc/apt/sources.list.tmp /etc/apt/sources.list
+                                    sudo rm /etc/apt/sources.list.tmp
+                                    echo -e "\n${GREEN_TXT}nvidia-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                else
+                                    sudo apt -y install nvidia-graphics-driver-${NVIDIA_VERSOIN} --fix-missing --fix-broken
+                                    if [ $? -eq 0 ]; then
+                                        sudo cp /etc/apt/sources.list.tmp /etc/apt/sources.list
+                                        sudo rm /etc/apt/sources.list.tmp
+                                        echo -e "\n${GREEN_TXT}nvidia-graphics-driver-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                    else
+                                        sudo apt -y install nvidia-${NVIDIA_VERSOIN} --fix-missing --fix-broken
+                                        if [ $? -eq 0 ]; then
+                                            sudo cp /etc/apt/sources.list.tmp /etc/apt/sources.list
+                                            sudo rm /etc/apt/sources.list.tmp
+                                            echo -e "\n${GREEN_TXT}nvidia-${NVIDIA_VERSOIN} installation is done${NO_COLOR}"
+                                        else
+                                            # sudo cp /etc/apt/sources.list /etc/apt/sources.list.main_server.bak
+                                            sudo cp /etc/apt/sources.list.tmp /etc/apt/sources.list
+                                            sudo rm /etc/apt/sources.list.tmp
+                                            echo -e "\n${RED_TXT}Nvidia ${NVIDIA_VERSOIN} driver, installation failed.${NO_COLOR}"
+                                            echo -e "\n${RED_TXT}Please go to \"Software & Updates\" then change the \"Download from:\" to \"Main server\" different server of your choice, click Close then click reload. and try to run this file once more.${NO_COLOR}"
+                                            echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
+                                            echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
+                                            echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.${NO_COLOR}"
+                                            exit 0
+                                        fi
+                                    fi
+                                fi
+                            fi
                         fi
                     fi
                 fi
@@ -152,7 +162,7 @@ nvidia_driver_installation(){
 cuda_installation(){
     echo -e "\n${WHITE_TXT}cuda ${CUDA_VERSOIN} installation${NO_COLOR}"
     cd $HOME
-    F=`sudo find | egrep ${FILE_NAME}`
+    F=`sudo find | egrep -m 1 ${FILE_NAME}`
     F=(${F// .// })
     if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
         chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
@@ -189,7 +199,7 @@ cuda_installation(){
         exit 0
     esac
     cd $HOME
-    Fcuda=`sudo find  | egrep ${CUDA_FILE}`
+    Fcuda=`sudo find  | egrep -m 1 ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
         Fcuda=(${Fcuda// .// })
         echo -e "\n${WHITE_TXT}You already have cuda run file no need to download!${NO_COLOR}"
@@ -256,7 +266,7 @@ cuda_installation(){
     echo -e "\n${WHITE_TXT}Third-party Libraries Installation${NO_COLOR}"
     sudo apt-get -y install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev  --fix-missing --fix-broken
     cd $HOME
-    Fcuda=`sudo find  | egrep ${CUDA_FILE}`
+    Fcuda=`sudo find  | egrep -m 1 ${CUDA_FILE}`
     if [ $? -eq 0 ]; then
         Fcuda=(${Fcuda// .// })
         cd $HOME
@@ -313,7 +323,7 @@ cuda_installation(){
 cudnn_installation(){
     echo -e "\n${WHITE_TXT}cudnn ${CUDNN_VERSOIN} installation${NO_COLOR}"
     cd $HOME
-    Fcudnn=`sudo find  | egrep ${CUDNN_FILE}`
+    Fcudnn=`sudo find  | egrep -m 1 ${CUDNN_FILE}`
     if [ $? -eq 0 ]; then
         Fcudnn=(${Fcudnn// .// })
         echo -e "\n${WHITE_TXT}Starts cudnn installation!${NO_COLOR}"
@@ -418,7 +428,7 @@ case $install in
 esac
 
 cd $HOME
-F=`sudo find | egrep ${FILE_NAME}`
+F=`sudo find | egrep -m 1 ${FILE_NAME}`
 F=(${F// .// })
 if [ ! -x $HOME$(dirname "${F:1}")/$(basename "${F}") ]; then
     chmod a+x $HOME$(dirname "${F:1}")/$(basename "${F}")
