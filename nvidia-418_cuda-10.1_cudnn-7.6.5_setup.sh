@@ -1,5 +1,10 @@
 #!/bin/bash
 
+[ "$BASH_SOURCE" != "$0" ] &&
+    echo "This file meant to be executed, like that: ./<file_name>" &&
+        return 88
+
+
 GREEN_TXT='\e[0;32m'
 WHITE_TXT='\e[1;37m'
 RED_TXT='\e[31m'
@@ -112,7 +117,7 @@ nvidia_driver_installation(){
                             cat /etc/apt/sources.list | egrep -m 1 "^deb http://archive.ubuntu.com/ubuntu"
                             if [ $? -eq 0 ]; then
                                 echo -e "\n${RED_TXT}Couldn't find Nvidia driver ${NVIDIA_VERSOIN} installation for you, please try different installation.${NO_COLOR}"
-                                exit 0
+                                exit 1
                             else
                                 sudo cp /etc/apt/sources.list /etc/apt/sources.list.tmp
                                 del=`cat /etc/apt/sources.list | egrep -m 1 "^deb http://"`
@@ -146,7 +151,7 @@ nvidia_driver_installation(){
                                             echo -e "${RED_TXT}For better detailed explanation look at the attached link below:${NO_COLOR}"
                                             echo -e "${RED_TXT}https://askubuntu.com/a/1229972${NO_COLOR}"
                                             echo -e "\n${RED_TXT}If the \"Download from:\" is already on the \"Main server\" or you already tried changing it, most likely this file can't help you. Try different installation.${NO_COLOR}"
-                                            exit 0
+                                            exit 1
                                         fi
                                     fi
                                 fi
@@ -197,7 +202,7 @@ cuda_installation(){
         ;;
         *)
         echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-        exit 0
+        exit 1
     esac
     cd $HOME
     Fcuda=`sudo find  | egrep -m 1 ${CUDA_FILE}`
@@ -246,7 +251,7 @@ cuda_installation(){
                     echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
                 else
                     echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                    exit 0
+                    exit 1
                 fi
             fi
         fi
@@ -310,7 +315,7 @@ cuda_installation(){
                         echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
                     else
                         echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                        exit 0
+                        exit 1
                     fi
                 fi
             fi
@@ -333,7 +338,7 @@ cudnn_installation(){
         echo -e "${WHITE_TXT}Please make sure you have the correct file (${CUDNN_FILE}) then try to install cudnn once more.${NO_COLOR}"
         echo -e "${WHITE_TXT}You may use the attached link below:${NO_COLOR}"
         echo -e "${WHITE_TXT}${CUDNN_URL}${NO_COLOR}"
-        exit 0
+        exit 1
     fi
     cd $HOME$(dirname "${Fcudnn:1}")
     tar -xzf $(basename "${Fcudnn}")
@@ -408,7 +413,7 @@ case $install in
                     echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
                 else
                     echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                    exit 0
+                    exit 1
                 fi
             fi
         fi
@@ -425,7 +430,7 @@ case $install in
     ;;
     *)
     echo -e "\n${WHITE_TXT}Sorry, invalid input please try again${NO_COLOR}"
-    exit 0
+    exit 1
 esac
 
 cd $HOME
@@ -480,7 +485,7 @@ y)
                 echo -e "${WHITE_TXT}lightdm service have been found${NO_COLOR}"
             else
                 echo -e "\n${RED_TXT}An error occurred, couldn't find lightdm service. You need to find which service are you using instead of lightdm gdm3 gdm${NO_COLOR}"
-                exit 0
+                exit 1
             fi
         fi
     fi
