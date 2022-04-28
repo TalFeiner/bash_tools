@@ -167,13 +167,13 @@ nvidia_driver_installation(){
 
 cuda_installation(){
     echo -e "\n${WHITE_TXT}cuda ${CUDA_VERSOIN} installation${NO_COLOR}"
-    if [ ! -x $(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}") ]; then
-        chmod a+x $(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}")
+    if [ ! -x /$(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}") ]; then
+        chmod a+x /$(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}")
     fi
     echo -e "\n${WHITE_TXT}If you don't have cuda run file (${CUDA_FILE}) Ethernet connection is required${NO_COLOR}"
     echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
-    echo -e "${WHITE_TXT}cd $(dirname "${FILE_NAME:1}")\n./$(basename "${FILE_NAME}")${NO_COLOR}"
+    echo -e "${WHITE_TXT}cd /$(dirname "${FILE_NAME:1}")\n./$(basename "${FILE_NAME}")${NO_COLOR}"
     echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
     echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
     echo -e "${WHITE_TXT}Are you in the tty? <y/n> ${NO_COLOR}\c"
@@ -430,14 +430,14 @@ case $install in
     exit 1
 esac
 
-if [ ! -x $(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}") ]; then
-    chmod a+x $(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}")
+if [ ! -x /$(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}") ]; then
+    chmod a+x /$(dirname "${FILE_NAME:1}")/$(basename "${FILE_NAME}")
 fi
 
 echo -e "\n${WHITE_TXT}Ethernet connection is required${NO_COLOR}"
 echo -e "\n${RED_TXT}Please, go to tty by pressing Ctrl+Alt+F3/F2/F1\nThen use the command:${NO_COLOR}"
 
-echo -e "${WHITE_TXT}cd $(dirname "${FILE_NAME:1}")\n./$(basename "${FILE_NAME}")${NO_COLOR}"
+echo -e "${WHITE_TXT}cd /$(dirname "${FILE_NAME:1}")\n./$(basename "${FILE_NAME}")${NO_COLOR}"
 echo -e "${WHITE_TXT}To run this file once more from the tty.${NO_COLOR}"
 echo -e "${RED_TXT}You can proceed without opening tty, but it's NOT recommended!${NO_COLOR}"
 echo -e "${WHITE_TXT}\nPress any key to continue or Ctrl+c to exit${NO_COLOR}"
