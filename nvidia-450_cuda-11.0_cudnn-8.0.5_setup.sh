@@ -12,7 +12,8 @@ CUDA_FILE=cuda_11.0.3_450.51.06_linux.run
 CUDNN_FILE=cudnn-11.0-linux-x64-v8.0.5.39.tgz
 CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run
 CUDNN_URL=https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.0.5/11.0_20201106/cudnn-11.0-linux-x64-v8.0.5.39.tgz
-FILE_NAME=${0##*/}
+FILE_NAME=$(readlink -f "${BASH_SOURCE[0]}")
+FILE_NAME=${FILE_NAME##*/}
 
 
 reboot_func(){
